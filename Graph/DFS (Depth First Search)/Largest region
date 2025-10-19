@@ -1,1 +1,53 @@
 #include <iostream>
+#include <vector>
+using namespace std;
+
+void dfs(vector<vector<int>>& a, int m, int n, int r, int c, int value, int &count) {
+    // điều kiện dừng
+    if (r < 0 || c < 0 || r >= m || c >= n || a[r][c] != value)
+        return;
+
+    // đánh dấu đã thăm
+    a[r][c] = 0;
+    count++;
+
+    // duyệt 4 hướng
+    dfs(a, m, n, r + 1, c, value, count);
+    dfs(a, m, n, r - 1, c, value, count);
+    dfs(a, m, n, r, c + 1, value, count);
+    dfs(a, m, n, r, c - 1, value, count);
+}
+
+int main() {
+    int m, n;
+    cin >> m >> n;
+    vector<vector<int>> a(m, vector<int>(n));
+
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n; j++)
+            cin >> a[i][j];
+
+    int maxArea = 0;
+    int maxValue = 0;
+
+    // duyệt tất cả ô
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            if (a[i][j] != 0) {
+                int count = 0;
+                int value = a[i][j];
+                dfs(a, m, n, i, j, value, count);
+
+                if (count > maxArea) {
+                    maxArea = count;
+                    maxValue = value;
+                }
+            }
+        }
+    }
+
+    cout << "Gia tri cua mien lon nhat: " << maxValue << endl;
+    cout << "Dien tich lon nhat: " << maxArea << endl;
+
+    return 0;
+}
