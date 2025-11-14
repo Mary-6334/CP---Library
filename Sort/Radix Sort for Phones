@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+const int MAX = 10;
+
+void countingSort(vector<pair<string,int>>& arr, int pos) {
+    int n = arr.size();
+    vector<pair<string,int>> output(n);
+    vector<int> count(MAX,0); // 10 chữ số 0-9
+
+    // Đếm số lần xuất hiện
+    for(int i=0; i<n; i++)
+        count[arr[i].first[pos]-'0']++;
+
+    // Tính vị trí trong output
+    for(int i=1; i<10; i++)
+        count[i] += count[i-1];
+
+    // Xây output stable (duyệt từ cuối)
+    for(int i=n-1; i>=0; i--) {
+        int idx = arr[i].first[pos]-'0';
+        output[count[idx]-1] = arr[i];
+        count[idx]--;
+    }
+
+    arr = output;
+}
+
+void radixSortPhones(vector<string>& phones) {
+    if(phones.empty()) return;
+
+    vector<pair<string,int>> p;
+    for(int i=0; i<phones.size(); i++)
+        p.push_back({phones[i], i});
+
+    for(int pos = MAX-1; pos >= 0; pos--)
+        countingSort(p,pos);
+
+    vector<string> sorted(phones.size());
+    for(int i=0; i<p.size(); i++)
+        sorted[i] = phones[p[i].second];
+
+    phones = sorted;
+}
+
+int main() {
+    vector<string> phones = {
+        "0912345678",
+        "0987654321",
+        "0123456789",
+        "0977123456"
+    };
+
+    cout << "Ban dau:\n";
+    for(auto &p : phones) cout << p << "\n";
+
+    radixSortPhones(phones);
+
+    cout << "\nSau khi sap xep:\n";
+    for(auto &p : phones) cout << p << "\n";
+}
