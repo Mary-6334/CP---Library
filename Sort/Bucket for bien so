@@ -1,0 +1,44 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    int n;
+    cout << "Nhap so luong bien so: ";
+    cin >> n;
+    cin.ignore(); // bỏ ký tự '\n' sau khi nhập số
+
+    vector<string> plates(n);
+
+    cout << "Nhap cac bien so (dang XX-YY-ZZZZ):\n";
+    for (int i = 0; i < n; i++) {
+        getline(cin, plates[i]);
+    }
+    
+    // --- 1️⃣ Tạo 100 bucket ---
+    vector<vector<string>> buckets(100);
+
+    // --- 2️⃣ Phân chia vào bucket ---
+    for (auto &p : plates) {
+        int code = stoi(p.substr(0, 2));  // lấy 2 số đầu
+        buckets[code].push_back(p);
+    }
+
+    // --- 3️⃣ Sort từng bucket riêng ---
+    for (int i = 0; i < 100; i++) {
+        sort(buckets[i].begin(), buckets[i].end());
+    }
+
+    // --- 4️⃣ Ghép các bucket lại ---
+    vector<string> sorted;
+    for (int i = 0; i < 100; i++) {
+        for (auto &x : buckets[i]) {
+            sorted.push_back(x);
+        }
+    }
+
+    // --- 5️⃣ In kết quả ---
+    cout << "\n=== Ket qua sau khi Bucket Sort ===\n";
+    for (auto &x : sorted) cout << x << "\n";
+
+    return 0;
+}
