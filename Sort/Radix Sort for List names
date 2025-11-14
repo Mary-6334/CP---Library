@@ -1,0 +1,102 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <stack>
+using namespace std;
+
+const int MAX_CHARS = 6;       // số ký tự tối đa dùng cho Radix Sort
+const int ALPHABET_SIZE = 29;  // 0='\0', 1=' ', 2..27 a-z
+
+int charToIndex(char c) {
+    if (c == '\0') return 0;
+    c = tolower(c);
+    if (c >= 'a' && c <= 'z') return c - 96;
+    return 1; // space
+}
+
+string getLastWord(const string& fullName) {
+    stack<char> s;
+    for (int i = fullName.length() - 1; i >= 0; i--) {
+        if (fullName[i] == ' ') break;
+        s.push(fullName[i]);
+    }
+
+    string lastWord = "";
+    while (!s.empty()) {
+        lastWord += s.top();
+        s.pop();
+    }
+
+    while (lastWord.length() < MAX_CHARS) lastWord += '\0';
+    return lastWord;
+}
+
+void countingSort(vector<pair<string, int>>& arr, int pos){
+    int n = arr.size();
+    vector<pair<string, int>> output(n);
+    vector<int> count(ALPHABET_SIZE,0);
+
+    for(int i = 0; i < n; i++){
+        count[charToIndex(arr[i].first[pos])]++;
+    }
+
+    for(int i = 1; i < ALPHABET_SIZE; i++){
+        count[i] += count[i-1];
+    }
+
+    for(int i = n-1; i >= 0; i--){
+        int idx = charToIndex(arr[i].first[pos]);
+        output[count[idx] - 1] = arr[i];
+        count[idx]--;
+    }
+    arr = output;
+}
+
+void radixSortNames(vector<string>& names){
+    if(names.empty()) return;
+
+    vector<pair<string, int>> p;
+    for(int i = 0; i < names.size(); i++){
+        p.push_back({getLastWord(names[i]), i});
+    }
+
+    // Radix Sort từ ký tự cuối về đầu
+    for(int pos = MAX_CHARS - 1; pos >= 0; pos--){
+        countingSort(p, pos);
+    }
+
+    vector<string> N(names.size());
+    for(int i = 0; i < p.size(); i++){
+        N[i] = names[p[i].second];
+    }
+
+    names = N;
+}
+
+int main() {
+    vector<string> names = {
+        "Nguyen Van An",
+        "Tran Thi Binh",
+        "Le Van Cuong",
+        "Pham Thi Dung",
+        "Hoang Van Hieu",
+        "Nguyen Thi Lan",
+        "Vo Van A",
+        "Do Thi B",
+        "Bui Van Anh",
+        "Pham Van Bin",
+        "Tran Thi Binh"
+    };
+
+    cout << "DANH SACH BAN DAU:\n";
+    for (auto &n : names) 
+        cout << " - " << n << "\n";
+
+    radixSortNames(names);
+
+    cout << "\nDANH SACH SAU KHI SAP XEP (theo Ten):\n";
+    for (auto &n : names)
+        cout << " - " << n << "\n";
+
+    return 0;
+}
